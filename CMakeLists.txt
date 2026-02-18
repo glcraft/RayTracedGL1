@@ -201,17 +201,13 @@ target_include_directories(RayTracedGL1 PUBLIC "Include")
 
 # FSR2
 target_include_directories(RayTracedGL1 PRIVATE "Source/FSR2/include" )
-if (WIN32)
-    if (BUILD_TYPE STREQUAL "DEBUG")
-        target_link_libraries(RayTracedGL1 PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/Source/FSR2/win32/ffx_fsr2_api_x64d.lib" )
-        target_link_libraries(RayTracedGL1 PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/Source/FSR2/win32/ffx_fsr2_api_vk_x64d.lib" )
-    else()
-        target_link_libraries(RayTracedGL1 PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/Source/FSR2/win32/ffx_fsr2_api_x64.lib" )
-        target_link_libraries(RayTracedGL1 PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/Source/FSR2/win32/ffx_fsr2_api_vk_x64.lib" )
-    endif()
-else()
-  #message(FATAL_ERROR "On non-WIN32, please, provide static libraries of FSR2 or disable FSR2")
-  add_compile_definitions(FFX_GCC)
+find_library(FSR2_VK_LIB NAMES ffx_fsr2_api_vk_x86_64 REQUIRED)
+find_library(FSR2_LIB NAMES ffx_fsr2_api_x86_64 REQUIRED)
+target_link_libraries(RayTracedGL1 PRIVATE "${FSR2_VK_LIB}" "${FSR2_LIB}")
+
+if (LINUX)
+    add_compile_definitions(FFX_GCC)
+    target_compile_options(RayTracedGL1 PRIVATE -fPIC)
 endif()
 
 
