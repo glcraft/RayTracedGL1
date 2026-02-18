@@ -963,7 +963,7 @@ typedef struct RgDrawFrameVolumetricParams
     // Volumetric directional light source parameters.
     RgFloat3D   sourceColor;
     RgFloat3D   sourceDirection;
-    // g parameter [-1..1] for the Henyey–Greenstein phase function.
+    // g parameter [-1..1] for the Henyeyï¿½Greenstein phase function.
     // Default: 0.0 (isotropic)
     float       sourceAssymetry;
 } RgDrawFrameVolumetricParams;
@@ -1205,7 +1205,9 @@ RGAPI RgResult RGCONV rgDrawFrame(
     RgInstance                          rgInstance,
     const RgDrawFrameInfo               *pDrawInfo);
 
-
+RGAPI RgResult RGCONV rgSetInitExtent(
+    uint32_t width,
+    uint32_t height);
 
 RGAPI RgBool32 RGCONV rgIsRenderUpscaleTechniqueAvailable(
     RgInstance                          rgInstance,

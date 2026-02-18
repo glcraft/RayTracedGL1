@@ -18,8 +18,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#include "Swapchain.h"
 #include "VulkanDevice.h"
 #include "RgException.h"
+#include <cstdint>
 
 using namespace RTGL1;
 
@@ -267,6 +269,11 @@ RgResult rgStartFrame(RgInstance rgInstance, const RgStartFrameInfo *pStartInfo)
 RgResult rgDrawFrame(RgInstance rgInstance, const RgDrawFrameInfo *pDrawInfo)
 {
     return Call(rgInstance, &VulkanDevice::DrawFrame, pDrawInfo);
+}
+
+RgResult rgSetInitExtent(uint32_t width, uint32_t height) {
+    Swapchain::SetInitExtent(VkExtent2D {.width = width, .height = height});
+    return RgResult::RG_SUCCESS;
 }
 
 RgBool32 rgIsRenderUpscaleTechniqueAvailable(RgInstance rgInstance, RgRenderUpscaleTechnique technique)

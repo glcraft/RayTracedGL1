@@ -21,6 +21,7 @@
 #include "Swapchain.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <utility>
 
 #include "RgException.h"
@@ -45,6 +46,8 @@ namespace
         return !(a == b);
     }
 }
+
+VkExtent2D Swapchain::INIT_EXTENT = VkExtent2D{.width = UINT32_MAX, .height = UINT32_MAX};
 
 Swapchain::Swapchain(VkDevice _device, 
     VkSurfaceKHR _surface,
@@ -127,6 +130,9 @@ Swapchain::Swapchain(VkDevice _device,
     }
 }
 
+void Swapchain::SetInitExtent(VkExtent2D newExtent) {
+    INIT_EXTENT = newExtent;
+}
 bool RTGL1::Swapchain::IsExtentOptimal() const
 {
     VkSurfaceCapabilitiesKHR surfCapabilities;
@@ -160,7 +166,10 @@ VkExtent2D Swapchain::GetOptimalExtent() const
 
     if (surfCapabilities.currentExtent.width == UINT32_MAX || surfCapabilities.currentExtent.height == UINT32_MAX)
     {
-        return surfCapabilities.maxImageExtent;
+        if (Swapchain::INIT_EXTENT.width == UINT32_MAX || Swapchain::INIT_EXTENT.height == UINT32_MAX)
+            return surfCapabilities.maxImageExtent;
+
+        return Swapchain::INIT_EXTENT;
     }
 
     return surfCapabilities.currentExtent;

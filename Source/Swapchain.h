@@ -46,6 +46,8 @@ public:
     Swapchain &operator=(const Swapchain &other) = delete;
     Swapchain &operator=(Swapchain &&other) noexcept = delete;
 
+    static void SetInitExtent(VkExtent2D newExtent);
+
     bool RequestVsync(bool enable);
 
     void AcquireImage(VkSemaphore imageAvailableSemaphore);
@@ -83,6 +85,7 @@ private:
     void CallDestroySubscribers();
 
 private:
+    static VkExtent2D INIT_EXTENT;
     VkDevice device;
     VkSurfaceKHR surface;
     VkPhysicalDevice physDevice;
