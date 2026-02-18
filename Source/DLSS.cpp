@@ -88,23 +88,17 @@ bool RTGL1::DLSS::TryInit(VkInstance instance, VkDevice device, VkPhysicalDevice
     NVSDK_NGX_Result r;
 
     std::wstring dllPath = GetFolderPath() + (enableDebug ? L"/dev/" : L"/rel/") ;
-#ifdef NV_WINDOWS
     wchar_t *dllPath_c = (wchar_t *)dllPath.c_str();
-#else
-    char dllPath_c_buf[PATH_MAX];
-    char *dllPath_c = &dllPath_c_buf[0];
-    std::wcstombs(dllPath_c, dllPath.c_str(), PATH_MAX);
-#endif
 
     NVSDK_NGX_PathListInfo pathsInfo = {};
     pathsInfo.Path = &dllPath_c;
     pathsInfo.Length = 1;
 
-    NGSDK_NGX_LoggingInfo debugLogInfo = {};
+    NVSDK_NGX_LoggingInfo debugLogInfo = {};
     debugLogInfo.LoggingCallback = &PrintCallback;
     debugLogInfo.MinimumLoggingLevel = NVSDK_NGX_Logging_Level::NVSDK_NGX_LOGGING_LEVEL_ON;
 
-    NGSDK_NGX_LoggingInfo releaseLogInfo = {};
+    NVSDK_NGX_LoggingInfo releaseLogInfo = {};
 
     NVSDK_NGX_FeatureCommonInfo commonInfo = {};
     commonInfo.PathListInfo = pathsInfo;
@@ -124,7 +118,7 @@ bool RTGL1::DLSS::TryInit(VkInstance instance, VkDevice device, VkPhysicalDevice
 
     r = NVSDK_NGX_VULKAN_Init_with_ProjectID(
         pAppGuid,
-        NVSDK_NGX_EngineType::NVSDK_NGX_ENGINE_TYPE_CUSTOM, RG_RTGL_VERSION_API, L"DLSSTemp/", instance, physDevice, device, &commonInfo);
+        NVSDK_NGX_EngineType::NVSDK_NGX_ENGINE_TYPE_CUSTOM, RG_RTGL_VERSION_API, L"DLSSTemp/", instance, physDevice, device, nullptr, nullptr, &commonInfo);
 
     if (NVSDK_NGX_FAILED(r))
     {
@@ -134,7 +128,7 @@ bool RTGL1::DLSS::TryInit(VkInstance instance, VkDevice device, VkPhysicalDevice
     r = NVSDK_NGX_VULKAN_GetCapabilityParameters(&pParams);
     if (NVSDK_NGX_FAILED(r))
     {
-        NVSDK_NGX_VULKAN_Shutdown();
+        NVSDK_NGX_VULKAN_Shutdown1(device);
         pParams = nullptr;
         
         return false;
@@ -229,7 +223,7 @@ void RTGL1::DLSS::Destroy()
         }
 
         NVSDK_NGX_VULKAN_DestroyParameters(pParams);
-        NVSDK_NGX_VULKAN_Shutdown();
+        NVSDK_NGX_VULKAN_Shutdown1(device);
 
         pParams = nullptr;
         isInitialized = false;
